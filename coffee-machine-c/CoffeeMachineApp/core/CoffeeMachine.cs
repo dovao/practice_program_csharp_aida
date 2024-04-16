@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CoffeeMachineApp.infrastructure;
 
 namespace CoffeeMachineApp.core;
 
@@ -8,11 +9,13 @@ public class CoffeeMachine
     private readonly Dictionary<DrinkType, decimal> _prices;
     private Order _order;
     private decimal _totalMoney;
+    private readonly MessageComposer _spainMessageComposer;
 
-    public CoffeeMachine(DrinkMakerDriver drinkMakerDriver, Dictionary<DrinkType, decimal> prices)
+    public CoffeeMachine(DrinkMakerDriver drinkMakerDriver, Dictionary<DrinkType, decimal> prices, MessageComposer messageComposer)
     {
         _drinkMakerDriver = drinkMakerDriver;
         _prices = prices;
+        _spainMessageComposer = messageComposer;
         InitializeState();
     }
 
@@ -45,7 +48,7 @@ public class CoffeeMachine
     {
         if (NoDrinkWasSelected())
         {
-            _drinkMakerDriver.Notify(ComposeSelectDrinkMessage());
+            _drinkMakerDriver.Notify(_spainMessageComposer.ComposeSelectDrinkMessage());
             return;
         }
 
@@ -56,7 +59,7 @@ public class CoffeeMachine
         }
         else
         {
-            _drinkMakerDriver.Notify(Message.Create($"You are missing {ComputeMissingMoney()}"));
+            _drinkMakerDriver.Notify(_spainMessageComposer.ComposeMissingMoneyMessage(ComputeMissingMoney()));
         }
     }
 
@@ -81,9 +84,5 @@ public class CoffeeMachine
         return _order.GetDrinkType() == DrinkType.None;
     }
 
-    private Message ComposeSelectDrinkMessage()
-    {
-        const string message = "Please, select a drink!";
-        return Message.Create(message);
-    }
+
 }

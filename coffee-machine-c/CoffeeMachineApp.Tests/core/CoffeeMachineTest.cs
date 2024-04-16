@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CoffeeMachineApp.core;
+using CoffeeMachineApp.infrastructure;
 using NSubstitute;
 using NUnit.Framework;
 using static CoffeeMachineApp.Tests.helpers.OrderBuilder;
@@ -213,12 +214,12 @@ public class CoffeeMachineTest
             { DrinkType.Coffee, 0 },
             { DrinkType.Tea, 0 }
         };
-         return new CoffeeMachine(_drinkMakerDriver, prices);
+         return new CoffeeMachine(_drinkMakerDriver, prices, new UkMessageComposer());
     }
     private CoffeeMachine PaidCoffeeMachine()
     {
         var prices = _pricesByDrinkType;
-        return new CoffeeMachine(_drinkMakerDriver, prices);
+        return new CoffeeMachine(_drinkMakerDriver, prices, new UkMessageComposer());
     }
 
     private List<Order> CaptureSentOrders()
