@@ -39,6 +39,14 @@ namespace Hello.Tests
             _output.Received(1).Send("Buenas tardes!");
         }
 
+        [TestCase("01/02/2024 21:00:00")]
+        public void say_good_night_in_night(string date)
+        {
+            _dateTimeProvider.GetDateTime().Returns(DateTime.Parse(date));
 
+            _helloService.Hello();
+
+            _output.Received(1).Send("Buenas noches!");
+        }
     }
 }

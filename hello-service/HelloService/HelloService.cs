@@ -15,9 +15,13 @@ public class HelloService
     {
         if (_dateTimeProvider.GetDateTime().Hour >= 6 && _dateTimeProvider.GetDateTime().Hour < 12)
             _output.Send("Buenos días!");
-        else
+        else if(_dateTimeProvider.GetDateTime().Hour >= 12 && _dateTimeProvider.GetDateTime().Hour < 21)
         {
             _output.Send("Buenas tardes!");
+        }
+        else
+        {
+            _output.Send("Buenas noches!");
         }
     }
 }
