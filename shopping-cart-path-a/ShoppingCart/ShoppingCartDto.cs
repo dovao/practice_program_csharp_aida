@@ -1,0 +1,17 @@
+using System;
+
+namespace ShoppingCart;
+
+public record ShoppingCartDto
+{
+    private readonly decimal _totalCost;
+
+    public ShoppingCartDto(decimal totalCost)
+    {
+        _totalCost = Math.Round(totalCost,2,MidpointRounding.ToPositiveInfinity);
+    }
+
+    public override string ToString() {
+        return $"{nameof(_totalCost)}: {_totalCost}";
+    }
+}
