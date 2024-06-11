@@ -1,3 +1,5 @@
+using System;
+
 namespace Hello;
 
 public class HelloService
@@ -13,9 +15,13 @@ public class HelloService
 
     public void Hello()
     {
-        if (_dateTimeProvider.GetDateTime().Hour >= 6 && _dateTimeProvider.GetDateTime().Hour < 12)
+        var currentDate = _dateTimeProvider.GetDateTime();
+
+        if (IsMorning(currentDate))
+        {
             _output.Send("Buenos días!");
-        else if(_dateTimeProvider.GetDateTime().Hour >= 12 && _dateTimeProvider.GetDateTime().Hour < 21)
+        }
+        else if(IsAfternoon(currentDate))
         {
             _output.Send("Buenas tardes!");
         }
@@ -23,5 +29,15 @@ public class HelloService
         {
             _output.Send("Buenas noches!");
         }
+    }
+
+    private static bool IsAfternoon(DateTime currentDate)
+    {
+        return currentDate.Hour >= 12 && currentDate.Hour < 21;
+    }
+
+    private static bool IsMorning(DateTime currentDate)
+    {
+        return currentDate.Hour >= 6 && currentDate.Hour < 12;
     }
 }

@@ -30,6 +30,8 @@ namespace Hello.Tests
         }
 
         [TestCase("01/02/2024 12:00:00")]
+        [TestCase("01/02/2024 19:59:59")]
+        [TestCase("01/02/2024 14:03:20")]
         public void say_good_afternoon_in_afternoon(string date)
         {
             _dateTimeProvider.GetDateTime().Returns(DateTime.Parse(date));
@@ -40,6 +42,8 @@ namespace Hello.Tests
         }
 
         [TestCase("01/02/2024 21:00:00")]
+        [TestCase("01/02/2024 05:59:59")]
+        [TestCase("01/02/2024 00:02:57")]
         public void say_good_night_in_night(string date)
         {
             _dateTimeProvider.GetDateTime().Returns(DateTime.Parse(date));
