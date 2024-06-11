@@ -2,7 +2,7 @@ using System;
 
 namespace Hello;
 
-public interface DateTimeProvider
+public interface ISystemDateTimeProvider
 {
     DateTime GetDateTime();
 }
