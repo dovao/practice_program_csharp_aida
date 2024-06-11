@@ -18,31 +18,4 @@ namespace Hello.Tests
             output.Received(1).Send("Buenos días!");
         }
     }
-
-    public interface Output
-    {
-        void Send(string message);
-    }
-
-    public interface DateTimeProvider
-    {
-        DateTime GetDateTime();
-    }
-
-    public class HelloService
-    {
-        private readonly DateTimeProvider _dateTimeProvider;
-        private readonly Output _output;
-
-        public HelloService(DateTimeProvider dateTimeProvider, Output output)
-        {
-            _dateTimeProvider = dateTimeProvider;
-            _output = output;
-        }
-
-        public void Hello()
-        {
-            _output.Send("Buenos días!");
-        }
-    }
 }
