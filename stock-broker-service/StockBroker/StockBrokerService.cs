@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+
 namespace StockBroker;
 
 public class StockBrokerService
@@ -15,6 +19,20 @@ public class StockBrokerService
 
     public void PlaceOrders(string orderSequence)
     {
-        _output.Send("8/15/2019 2:45 PM Buy: € 0.00, Sell: € 0.00");
+        var currentDate = _dateTimeProvider.Get();
+        var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("H:mm") + " PM";
+        if (String.IsNullOrEmpty(orderSequence))
+        {
+            message += " Buy: € 0.00, Sell: € 0.00";
+        }
+        else
+        {
+            _brockerOnlineService.SendOrder(new Order("GOOG", 300, 829.08, TypeOrder.Buy));
+            message += " Buy: € 248724.00, Sell: € 0.00";
+        }
+
+
+
+        _output.Send(message);
     }
 }
