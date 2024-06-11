@@ -17,7 +17,7 @@ public class HelloService
             _output.Send("Buenos días!");
         else
         {
-            _output.Send("Buenos tardes!");
+            _output.Send("Buenas tardes!");
         }
     }
 }

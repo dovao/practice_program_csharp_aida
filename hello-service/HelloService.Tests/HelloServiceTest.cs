@@ -5,30 +5,40 @@ namespace Hello.Tests
 {
     public class HelloServiceTest
     {
-        [Test]
-        public void say_good_morning_at_six_o_clock()
+        private DateTimeProvider _dateTimeProvider;
+        private Output _output;
+        private HelloService _helloService;
+
+        [SetUp]
+        public void SetUp()
         {
-            var dateTimeProvider = Substitute.For<DateTimeProvider>();
-            var output = Substitute.For<Output>();
-            dateTimeProvider.GetDateTime().Returns(DateTime.Parse("01/02/2024 06:00:00"));
-            var helloService = new HelloService(dateTimeProvider, output);
-
-            helloService.Hello();
-
-            output.Received(1).Send("Buenos días!");
+            _dateTimeProvider = Substitute.For<DateTimeProvider>();
+            _output = Substitute.For<Output>();
+            _helloService = new HelloService(_dateTimeProvider, _output);
         }
 
-        [Test]
-        public void say_good_afternoon_at_twelve_o_clock()
+        [TestCase("01/02/2024 06:00:00")]
+        [TestCase("01/02/2024 11:59:59")]
+        [TestCase("01/02/2024 10:34:52")]
+        public void say_good_morning_in_morning(string date)
         {
-            var dateTimeProvider = Substitute.For<DateTimeProvider>();
-            var output = Substitute.For<Output>();
-            dateTimeProvider.GetDateTime().Returns(DateTime.Parse("01/02/2024 12:00:00"));
-            var helloService = new HelloService(dateTimeProvider, output);
+            _dateTimeProvider.GetDateTime().Returns(DateTime.Parse(date));
 
-            helloService.Hello();
+            _helloService.Hello();
 
-            output.Received(1).Send("Buenos tardes!");
+            _output.Received(1).Send("Buenos días!");
         }
+
+        [TestCase("01/02/2024 12:00:00")]
+        public void say_good_afternoon_in_afternoon(string date)
+        {
+            _dateTimeProvider.GetDateTime().Returns(DateTime.Parse(date));
+
+            _helloService.Hello();
+
+            _output.Received(1).Send("Buenas tardes!");
+        }
+
+
     }
 }
