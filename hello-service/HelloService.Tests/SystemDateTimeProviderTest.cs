@@ -3,14 +3,14 @@
 namespace Hello.Tests;
 
 [TestFixture]
-[TestOf(typeof(SystemSystemDateTimeProvider))]
+[TestOf(typeof(SystemDateTimeProvider))]
 public class SystemDateTimeProviderTest
 {
 
     [Test]
     public void get_current_datetime()
     {
-        var systemDateTimeProvider = new SystemSystemDateTimeProvider();
+        var systemDateTimeProvider = new SystemDateTimeProvider();
 
         var currentDate = systemDateTimeProvider.GetDateTime();
 

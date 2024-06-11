@@ -2,7 +2,7 @@ using System;
 
 namespace Hello;
 
-public class SystemSystemDateTimeProvider : ISystemDateTimeProvider
+public class SystemDateTimeProvider : DateTimeProvider
 {
     public DateTime GetDateTime()
     {

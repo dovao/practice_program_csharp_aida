@@ -4,18 +4,18 @@ namespace Hello;
 
 public class HelloService
 {
-    private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+    private readonly DateTimeProvider _dateTimeProvider;
     private readonly Output _output;
 
-    public HelloService(ISystemDateTimeProvider systemDateTimeProvider, Output output)
+    public HelloService(DateTimeProvider dateTimeProvider, Output output)
     {
-        _systemDateTimeProvider = systemDateTimeProvider;
+        _dateTimeProvider = dateTimeProvider;
         _output = output;
     }
 
     public void Hello()
     {
-        var currentDate = _systemDateTimeProvider.GetDateTime();
+        var currentDate = _dateTimeProvider.GetDateTime();
 
         if (IsMorning(currentDate))
         {
