@@ -6,6 +6,9 @@ public class HelloService
 {
     private readonly DateTimeProvider _dateTimeProvider;
     private readonly Output _output;
+    private const string GOOD_MORNING_MESSAGE = "Buenos días!";
+    private const string GOOD_AFTERNOON_MESSAGE = "Buenas tardes!";
+    private const string GOOD_NIGHT_MESSAGE = "Buenas noches!";
 
     public HelloService(DateTimeProvider dateTimeProvider, Output output)
     {
@@ -15,29 +18,28 @@ public class HelloService
 
     public void Hello()
     {
-        var currentDate = _dateTimeProvider.GetDateTime();
+        var currentHour = _dateTimeProvider.GetDateTime().Hour;
+        var message = GOOD_NIGHT_MESSAGE;
 
-        if (IsMorning(currentDate))
+        if (IsMorning(currentHour))
         {
-            _output.Send("Buenos días!");
+            message = GOOD_MORNING_MESSAGE;
         }
-        else if(IsAfternoon(currentDate))
+        else if(IsAfternoon(currentHour))
         {
-            _output.Send("Buenas tardes!");
+            message = GOOD_AFTERNOON_MESSAGE;
         }
-        else
-        {
-            _output.Send("Buenas noches!");
-        }
+
+        _output.Send(message);
     }
 
-    private static bool IsAfternoon(DateTime currentDate)
+    private bool IsMorning(int hour)
     {
-        return currentDate.Hour >= 12 && currentDate.Hour < 21;
+        return hour >= 6 && hour < 12;
     }
 
-    private static bool IsMorning(DateTime currentDate)
+    private bool IsAfternoon(int hour)
     {
-        return currentDate.Hour >= 6 && currentDate.Hour < 12;
+        return hour >= 12 && hour < 21;
     }
 }
