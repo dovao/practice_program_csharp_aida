@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Hello.Infrastructure;
+using NUnit.Framework;
 
 namespace Hello.Tests;
 

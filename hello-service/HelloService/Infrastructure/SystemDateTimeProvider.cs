@@ -1,6 +1,6 @@
 using System;
 
-namespace Hello;
+namespace Hello.Infrastructure;
 
 public class SystemDateTimeProvider : DateTimeProvider
 {
