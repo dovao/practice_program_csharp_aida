@@ -1,5 +1,3 @@
-using System;
-
 namespace Hello;
 
 public class HelloService

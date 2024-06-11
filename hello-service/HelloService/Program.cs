@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using Hello.Infrastructure;
+﻿using Hello.Infrastructure;
 
 namespace Hello
 {

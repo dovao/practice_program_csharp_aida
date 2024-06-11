@@ -1,5 +1,4 @@
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 
 namespace Hello.Tests
