@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
+using System.Net.Sockets;
 
 namespace StockBroker;
 
@@ -20,18 +21,19 @@ public class StockBrokerService
     public void PlaceOrders(string orderSequence)
     {
         var currentDate = _dateTimeProvider.Get();
+        var summary = new Summary();
         var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("H:mm") + " PM";
         if (String.IsNullOrEmpty(orderSequence))
         {
-            message += " Buy: € 0.00, Sell: € 0.00";
+            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € 0.00";
         }
         else
         {
-            _brockerOnlineService.SendOrder(new Order("GOOG", 300, 829.08, TypeOrder.Buy));
-            message += " Buy: € 248724.00, Sell: € 0.00";
+            var order = new Order("GOOG", 300, 829.08, TypeOrder.Buy);
+            summary.AddOrder(order);
+            _brockerOnlineService.SendOrder(order);
+            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € 0.00";
         }
-
-
 
         _output.Send(message);
     }
