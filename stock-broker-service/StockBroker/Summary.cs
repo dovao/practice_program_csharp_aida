@@ -13,6 +13,12 @@ public class Summary
         return totalBuy;
     }
 
+    public double GetTotalShell()
+    {
+        var totalBuy = _orders.Where(o => o.Type == TypeOrder.Shell).Sum(o => o.Price * o.Quantity);
+        return totalBuy;
+    }
+
     public void AddOrder(Order order)
     {
         _orders.Add(order);

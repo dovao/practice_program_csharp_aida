@@ -25,16 +25,27 @@ public class StockBrokerService
         var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("H:mm") + " PM";
         if (String.IsNullOrEmpty(orderSequence))
         {
-            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € 0.00";
+            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
         }
         else
         {
-            var order = new Order("GOOG", 300, 829.08, TypeOrder.Buy);
+            var order = ExtractOrder(orderSequence);
             summary.AddOrder(order);
             _brockerOnlineService.SendOrder(order);
-            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € 0.00";
+            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
         }
 
         _output.Send(message);
+    }
+
+    private static Order ExtractOrder(string orderSequence)
+    {
+        var splitSequence = orderSequence.Split(' ');
+        var tickerSymbol = splitSequence[0];
+        var quantity = int.Parse(splitSequence[1]);
+        var price = double.Parse(splitSequence[2]);
+        var typeOrder = splitSequence[3] == "B" ? TypeOrder.Buy : TypeOrder.Shell;
+        var order = new Order(tickerSymbol, quantity, price, typeOrder);
+        return order;
     }
 }

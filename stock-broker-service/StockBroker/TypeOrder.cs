@@ -2,5 +2,6 @@ namespace StockBroker;
 
 public enum TypeOrder
 {
-    Buy = 'B'
+    Buy = 'B',
+    Shell = 'S'
 }
