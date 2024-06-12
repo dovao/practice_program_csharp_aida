@@ -22,15 +22,10 @@ public class StockBrokerService
 
     public void PlaceOrders(string orderSequence)
     {
-        var currentDate = _dateTimeProvider.Get();
         var summary = new Summary();
         var ordersFailed = new List<Order>();
-        var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("h:mm tt");
-        if (String.IsNullOrEmpty(orderSequence))
-        {
-            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
-        }
-        else
+        var messageComposer = new MessageComposer(_dateTimeProvider);
+        if (!String.IsNullOrEmpty(orderSequence))
         {
             var orders = OrderExtractor.ExtractOrders(orderSequence);
 
@@ -46,22 +41,11 @@ public class StockBrokerService
                     ordersFailed.Add(order);
                 }
             }
-
-            message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
-
-            if (ordersFailed.Count > 0)
-            {
-                message += $", Failed:";
-
-                foreach (var order in ordersFailed)
-                {
-                    message += " " + order.TickerSymbol + ",";
-                }
-
-                message = message.Substring(0, message.Length - 1);
-            }
         }
 
-        _output.Send(message);
+        messageComposer.AddSummary(summary);
+        messageComposer.AddOrdersFailed(ordersFailed);
+
+        _output.Send(messageComposer.ComposeMessage());
     }
 }
