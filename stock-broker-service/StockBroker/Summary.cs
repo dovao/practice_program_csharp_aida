@@ -19,9 +19,9 @@ public class Summary
         return totalBuy;
     }
 
-    public void AddOrder(Order order)
+    public void AddOrders(List<Order> order)
     {
-        _orders.Add(order);
+        _orders.AddRange(order);
     }
 
     public override string ToString()

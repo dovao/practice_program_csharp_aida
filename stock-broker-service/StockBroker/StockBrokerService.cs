@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.Linq;
 using System.Net.Sockets;
 
 namespace StockBroker;
@@ -22,20 +24,29 @@ public class StockBrokerService
     {
         var currentDate = _dateTimeProvider.Get();
         var summary = new Summary();
-        var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("H:mm") + " PM";
+        var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("h:mm tt");
         if (String.IsNullOrEmpty(orderSequence))
         {
             message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
         }
         else
         {
-            var order = ExtractOrder(orderSequence);
-            summary.AddOrder(order);
-            _brockerOnlineService.SendOrder(order);
+            var orders = ExtractOrders(orderSequence);
+
+            summary.AddOrders(orders);
+            orders.ForEach(o => _brockerOnlineService.SendOrder(o));
+            
             message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
         }
 
         _output.Send(message);
+    }
+
+    private static List<Order> ExtractOrders(string orderSequence)
+    {
+        var ordersBySequence = orderSequence.Split(',').ToList();
+        var order = ordersBySequence.Select(s => ExtractOrder(s)).ToList();
+        return order;
     }
 
     private static Order ExtractOrder(string orderSequence)
