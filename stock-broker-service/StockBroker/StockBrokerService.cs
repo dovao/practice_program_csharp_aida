@@ -24,6 +24,7 @@ public class StockBrokerService
     {
         var currentDate = _dateTimeProvider.Get();
         var summary = new Summary();
+        var ordersFailed = new List<Order>();
         var message = currentDate.ToString("M/dd/yyyy").Replace("-","/") + " " + currentDate.ToString("h:mm tt");
         if (String.IsNullOrEmpty(orderSequence))
         {
@@ -31,32 +32,36 @@ public class StockBrokerService
         }
         else
         {
-            var orders = ExtractOrders(orderSequence);
+            var orders = OrderExtractor.ExtractOrders(orderSequence);
 
-            summary.AddOrders(orders);
-            orders.ForEach(o => _brockerOnlineService.SendOrder(o));
-            
+            foreach (var order in orders)
+            {
+                try
+                {
+                    _brockerOnlineService.SendOrder(order);
+                    summary.AddOrder(order);
+                }
+                catch (Exception e)
+                {
+                    ordersFailed.Add(order);
+                }
+            }
+
             message += $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalShell().ToString("F")}";
+
+            if (ordersFailed.Count > 0)
+            {
+                message += $", Failed:";
+
+                foreach (var order in ordersFailed)
+                {
+                    message += " " + order.TickerSymbol + ",";
+                }
+
+                message = message.Substring(0, message.Length - 1);
+            }
         }
 
         _output.Send(message);
-    }
-
-    private static List<Order> ExtractOrders(string orderSequence)
-    {
-        var ordersBySequence = orderSequence.Split(',').ToList();
-        var order = ordersBySequence.Select(s => ExtractOrder(s)).ToList();
-        return order;
-    }
-
-    private static Order ExtractOrder(string orderSequence)
-    {
-        var splitSequence = orderSequence.Split(' ');
-        var tickerSymbol = splitSequence[0];
-        var quantity = int.Parse(splitSequence[1]);
-        var price = double.Parse(splitSequence[2]);
-        var typeOrder = splitSequence[3] == "B" ? TypeOrder.Buy : TypeOrder.Shell;
-        var order = new Order(tickerSymbol, quantity, price, typeOrder);
-        return order;
     }
 }

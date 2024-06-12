@@ -2,6 +2,7 @@ using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using System.Diagnostics;
+using NSubstitute.ExceptionExtensions;
 
 namespace StockBroker.Tests
 {
@@ -65,6 +66,29 @@ namespace StockBroker.Tests
             _brockerOnlineService.Received(1).SendOrder(new("AAPL", 50, 139.78, TypeOrder.Buy));
             _brockerOnlineService.Received(1).SendOrder(new("FB", 320, 137.17, TypeOrder.Shell));
             _output.Received(1).Send("6/15/2009 2:45 AM Buy: \u20ac 10603.00, Sell: \u20ac 43894.40");
+        }
+
+        [Test]
+        public void when_brocker_online_service_fail_not_sum_failed_orders_and_show_order_with_errors()
+        {
+            var orderFail1 = new Order("FB", 320, 137.17, TypeOrder.Shell);
+            var orderFail2 = new Order("ORCL", 1000, 42.69, TypeOrder.Shell);
+            _brockerOnlineService
+                .When(x => x.SendOrder(orderFail1))
+                .Do(x => { throw new Exception("Broker online service failed"); });
+
+            _brockerOnlineService
+                .When(x => x.SendOrder(orderFail2))
+                .Do(x => { throw new Exception("Broker online service failed"); });
+            _dateTimeProvider.Get().Returns(DateTime.Parse("15/06/2009 13:45:40"));
+
+            _stockBrokerService.PlaceOrders("ZNGA 1300 2.78 B,AAPL 50 139.78 B,FB 320 137.17 S,ORCL 1000 42.69 S");
+
+            _brockerOnlineService.Received(1).SendOrder(new("ZNGA", 1300, 2.78, TypeOrder.Buy));
+            _brockerOnlineService.Received(1).SendOrder(new("AAPL", 50, 139.78, TypeOrder.Buy));
+            _brockerOnlineService.Received(1).SendOrder(orderFail1);
+            _brockerOnlineService.Received(1).SendOrder(orderFail2);
+            _output.Received(1).Send("6/15/2009 1:45 PM Buy: \u20ac 10603.00, Sell: \u20ac 0.00, Failed: FB, ORCL");
         }
     }
 }
