@@ -6,37 +6,25 @@ namespace StockBroker;
 public class MessageComposer
 {
     private readonly DateTimeProvider _dateTimeProvider;
-    private Summary _summary;
-    private List<Order> _ordersFailed;
 
     public MessageComposer(DateTimeProvider dateTimeProvider)
     {
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public void AddOrdersFailed(List<Order> ordersFailed)
+    public string ComposeMessage(Summary summary)
     {
-        _ordersFailed = ordersFailed;
+        return $"{FormatCurrentDate()}{GetSummaryFormat(summary)}{GetFailOrderFormat(summary.GetOrdersFailed())}";
     }
 
-    public void AddSummary(Summary summary)
-    {
-        _summary = summary;
-    }
-
-    public string ComposeMessage()
-    {
-        return $"{FormatCurrentDate()}{GetSummaryFormat()}{GetFailOrderFormat()}";
-    }
-
-    private string GetFailOrderFormat()
+    private string GetFailOrderFormat(List<Order> ordersFailed)
     {
         var message = "";
-        if (_ordersFailed.Count > 0)
+        if (ordersFailed.Count > 0)
         {
             message += $", Failed:";
 
-            foreach (var order in _ordersFailed)
+            foreach (var order in ordersFailed)
             {
                 message += " " + order.TickerSymbol + ",";
             }
@@ -47,9 +35,9 @@ public class MessageComposer
         return message;
     }
 
-    private string GetSummaryFormat()
+    private string GetSummaryFormat(Summary summary)
     {
-        return $" Buy: € {_summary.GetTotalBuy().ToString("F")}, Sell: € {_summary.GetTotalShell().ToString("F")}";
+        return $" Buy: € {summary.GetTotalBuy().ToString("F")}, Sell: € {summary.GetTotalSell().ToString("F")}";
     }
 
     private string FormatCurrentDate()

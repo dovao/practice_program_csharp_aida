@@ -1,31 +1,53 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace StockBroker;
 
 public class Summary
 {
-    private List<Order> _orders = new List<Order>();
+    private Orders _buyOrders;
+    private Orders _sellOrders;
+    private Orders _ordersFailed;
 
+    public Summary()
+    {
+        _buyOrders = new Orders();
+        _sellOrders = new Orders();
+        _ordersFailed = new Orders();
+    }
     public double GetTotalBuy()
     {
-        var totalBuy = _orders.Where(o => o.Type == TypeOrder.Buy).Sum(o => o.Price * o.Quantity);
-        return totalBuy;
+        return _buyOrders.GetTotal();
     }
 
-    public double GetTotalShell()
+    public double GetTotalSell()
     {
-        var totalBuy = _orders.Where(o => o.Type == TypeOrder.Shell).Sum(o => o.Price * o.Quantity);
-        return totalBuy;
+        return _sellOrders.GetTotal();
     }
 
     public void AddOrder(Order order)
     {
-        _orders.Add(order);
+        if (order.Type == TypeOrder.Buy)
+        {
+            _buyOrders.Add(order);
+        }
+        else
+        {
+            _sellOrders.Add(order);
+        }
+    }
+
+    public void AddOrderFailed(Order order)
+    {
+        _ordersFailed.Add(order);
     }
 
     public override string ToString()
     {
-        return $"{nameof(_orders)}: {_orders}";
+        return $"{nameof(_buyOrders)}: {_buyOrders}, {nameof(_sellOrders)}: {_sellOrders}";
+    }
+
+    public List<Order> GetOrdersFailed()
+    {
+        return _ordersFailed.Get();
     }
 }

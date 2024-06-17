@@ -23,29 +23,34 @@ public class StockBrokerService
     public void PlaceOrders(string orderSequence)
     {
         var summary = new Summary();
-        var ordersFailed = new List<Order>();
         var messageComposer = new MessageComposer(_dateTimeProvider);
+
         if (!String.IsNullOrEmpty(orderSequence))
         {
-            var orders = OrderExtractor.ExtractOrders(orderSequence);
+           summary = GetSummaryFromOrdersSequence(orderSequence);
+        }
 
-            foreach (var order in orders)
+        _output.Send(messageComposer.ComposeMessage(summary));
+    }
+
+    private Summary GetSummaryFromOrdersSequence(string orderSequence)
+    {
+        var summary = new Summary();
+        var orders = OrderExtractor.ExtractOrders(orderSequence);
+
+        foreach (var order in orders)
+        {
+            try
             {
-                try
-                {
-                    _brockerOnlineService.SendOrder(order);
-                    summary.AddOrder(order);
-                }
-                catch (Exception e)
-                {
-                    ordersFailed.Add(order);
-                }
+                _brockerOnlineService.SendOrder(order);
+                summary.AddOrder(order);
+            }
+            catch (Exception e)
+            {
+                summary.AddOrderFailed(order);
             }
         }
 
-        messageComposer.AddSummary(summary);
-        messageComposer.AddOrdersFailed(ordersFailed);
-
-        _output.Send(messageComposer.ComposeMessage());
+        return summary;
     }
 }
